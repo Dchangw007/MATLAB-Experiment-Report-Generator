@@ -1,0 +1,203 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: #eef1f5;
+  color: #1f2328;
+  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================= 编辑面板 ================= */
+.panel {
+  max-width: 960px;
+  margin: 28px auto 12px;
+  padding: 22px 26px 26px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(16,24,40,.08);
+}
+.panel h2 { margin: 0 0 6px; font-size: 19px; letter-spacing: .5px; }
+.panel .hint { margin: 0 0 18px; font-size: 12.5px; color: #667085; line-height: 1.8; }
+.panel .hint b { color: #2b5c9b; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field.full { grid-column: 1 / -1; }
+.field label { font-size: 13px; color: #344054; font-weight: 600; }
+.field label em { font-style: normal; font-weight: 400; color: #98a2b3; font-size: 12px; margin-left: 4px; }
+input[type=text], textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1f2328;
+  padding: 8px 11px;
+  border: 1px solid #d0d5dd;
+  border-radius: 7px;
+  outline: none;
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+input[type=text]:focus, textarea:focus {
+  border-color: #2b5c9b;
+  box-shadow: 0 0 0 3px rgba(43,92,155,.13);
+}
+textarea { min-height: 74px; line-height: 1.6; resize: vertical; }
+#iCode {
+  min-height: 320px;
+  font-family: Consolas, "SFMono-Regular", Menlo, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre;
+  overflow: auto;
+}
+
+/* ---------- 图片上传 ---------- */
+.upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+.upload-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border: 1px solid #d0d5dd; border-radius: 7px;
+  background: #fff; cursor: pointer; font-size: 13.5px; color: #344054;
+  transition: .15s;
+}
+.upload-btn:hover { background: #f5f7fa; border-color: #b9c1cd; }
+.upload-hint { font-size: 12px; color: #98a2b3; }
+.thumb-list { display: none; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.thumb {
+  position: relative; width: 120px; height: 86px;
+  border: 1px solid #e4e7ec; border-radius: 6px;
+  overflow: hidden; background: #f8f9fb;
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb-del {
+  position: absolute; top: 3px; right: 3px;
+  width: 20px; height: 20px; padding: 0;
+  border-radius: 50%; border: none;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 13px; line-height: 1; cursor: pointer;
+}
+.thumb-del:hover { background: #b42318; }
+
+/* ---------- 工具栏 ---------- */
+.toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  margin-top: 18px; padding-top: 16px;
+  border-top: 1px dashed #e4e7ec;
+}
+button {
+  font-family: inherit; font-size: 14px;
+  padding: 9px 20px; border-radius: 7px; border: 1px solid transparent;
+  cursor: pointer; transition: .15s;
+}
+.btn-primary { background: #2b5c9b; color: #fff; }
+.btn-primary:hover { background: #22497c; }
+.btn-ghost { background: #fff; border-color: #d0d5dd; color: #344054; }
+.btn-ghost:hover { background: #f5f7fa; }
+.status { font-size: 13px; color: #207f57; }
+.check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #344054; cursor: pointer; user-select: none; }
+
+/* ================= 报告纸张 ================= */
+#report {
+  display: none;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 24px auto 60px;
+  padding: 20mm 18mm;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(16,24,40,.14);
+  font-family: "Songti SC", "SimSun", "宋体", serif;
+  color: #000;
+  font-size: 11pt;
+  line-height: 1.75;
+}
+#report.show { display: block; }
+
+.rpt-head { text-align: center; margin-bottom: 6px; }
+.rpt-title {
+  font-family: "SimHei", "黑体", "Microsoft YaHei", sans-serif;
+  font-size: 22pt; font-weight: 700; letter-spacing: 6px; margin: 0;
+}
+.rpt-sub { font-size: 10.5pt; color: #555; margin-top: 8px; letter-spacing: 2px; }
+
+.meta {
+  margin: 18px 0 22px;
+  padding: 10px 0;
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 28px;
+  font-size: 10.5pt;
+}
+.meta .k { color: #333; }
+.meta .v { font-family: "SimHei", "黑体", sans-serif; }
+
+.section { margin-bottom: 16px; }
+.section h3 {
+  font-family: "SimHei", "黑体", "Microsoft YaHei", sans-serif;
+  font-size: 12.5pt; font-weight: 700;
+  margin: 0 0 8px;
+  padding-left: 9px;
+  border-left: 4px solid #2b5c9b;
+  line-height: 1.4;
+}
+.section .body {
+  font-size: 11pt;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: justify;
+}
+
+/* ---------- 代码块 ---------- */
+.code-block {
+  font-family: Consolas, "SFMono-Regular", Menlo, "Courier New", monospace;
+  font-size: 9pt;
+  line-height: 1.5;
+  margin: 0;
+  padding: 10px 13px;
+  background: #f8f9fb;
+  border: 1px solid #d8dde5;
+  border-left: 3px solid #2b5c9b;
+  border-radius: 3px;
+  color: #1f2328;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.tok-kw  { color: #0033b3; font-weight: 600; }
+.tok-fn  { color: #7a3e9d; }
+.tok-str { color: #067d17; }
+.tok-cmt { color: #8a8a8a; font-style: italic; }
+.tok-num { color: #1750eb; }
+
+/* ---------- 结果 / 目的图片 ---------- */
+.img-list { margin-top: 10px; }
+.img-item {
+  margin: 0 0 12px;
+  text-align: center;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.img-item img {
+  max-width: 100%;
+  max-height: 105mm;
+  border: 1px solid #d8dde5;
+}
+
+/* ================= 打印 ================= */
+@media print {
+  body { background: #fff; }
+  .panel, .no-print { display: none !important; }
+  #report {
+    display: block !important;
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  @page { size: A4; margin: 16mm 15mm; }
+  .section h3 { break-after: avoid; page-break-after: avoid; }
+  .meta { break-inside: avoid; }
+}

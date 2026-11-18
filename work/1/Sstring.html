@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="邸常伟">
+<title>三角分解的数值计算实验报告</title>
+
+<!-- 如需在报告中插入 LaTeX 公式，保留此行；不需要公式可整行删除。
+     加上 defer 后不会阻塞页面渲染，离线时也不影响正文显示。 -->
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+/* ================= 页面设置 ================= */
+@page {
+  size: A4;
+  margin: 22mm 18mm;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f2f2f2;
+  color: #000;
+  font-family: "Times New Roman", "SimSun", "宋体", serif;
+  font-size: 10.5pt;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  orphans: 3;
+  widows: 3;
+}
+
+/* 屏幕上模拟一张 A4 纸：210mm 宽，左右各留 18mm，正文正好 174mm */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 22mm 18mm;
+  background: #fff;
+  box-shadow: 0 0 12px rgba(0, 0, 0, .12);
+}
+
+/* ================= 封面 ================= */
+.cover {
+  padding-top: 18mm;
+  text-align: center;
+  page-break-after: always;
+  break-after: page;
+}
+
+.cover-school {
+  font-family: "LiSu", "隶书", serif;
+  text-align:center;
+  font-size: 30pt;
+  letter-spacing: 4pt;
+  text-indent: 0;
+  margin: 0 0 6mm;
+}
+
+.cover-course {
+  font-family: "KaiTi", "楷体", serif;
+  text-align:center;
+  font-size: 22pt;
+  font-weight: bold;
+  letter-spacing: 2pt;
+  text-indent: 0;
+  margin: 0 0 26mm;
+}
+
+h1.report-title {
+  font-family: "KaiTi", "楷体", serif;
+  font-size: 26pt;
+  font-weight: bold;
+  letter-spacing: 3pt;
+  line-height: 1.3;
+  margin: 0 0 34mm;
+}
+
+/* 三个信息项放在同一个 grid 中，冒号才能严格对齐 */
+.cover-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12pt 4pt;
+  width: 92mm;
+  margin: 0 auto 52mm;
+  text-align: left;
+  font-family: "KaiTi", "楷体", serif;
+  font-size: 14pt;
+}
+
+.cover-info .label {
+  white-space: nowrap;
+  text-align: left;
+}
+
+.cover-info .value {
+  border-bottom: .75pt solid #000;
+  padding: 0 4pt 2pt;
+}
+
+.cover-date {
+  font-family: "KaiTi", "楷体", serif;
+  text-align:center;
+  font-size: 16pt;
+  letter-spacing: 2pt;
+  text-indent: 0;
+  margin: 0;
+}
+
+/* ================= 正文 ================= */
+h2 {
+  font-size: 12pt;
+  font-weight: bold;
+  line-height: 1.4;
+  margin: 16pt 0 8pt;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h3 {
+  font-size: 10.5pt;
+  font-weight: bold;
+  margin: 12pt 0 5pt;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:10pt 0;
+}
+table th, table td{
+  border:1px solid #000;
+  padding:5pt 7pt;
+  font-size:9pt;
+}
+table th{
+  background:#f8f8f8;
+}
+/* 中文段落首行缩进两个汉字 */
+p {
+  margin: 5pt 0;
+  text-indent: 2em;
+  text-align: justify;
+}
+
+p.no-indent,
+.cover p {
+  text-indent: 0;
+}
+
+/* 图 */
+figure {
+  margin: 10pt 0;
+  text-align: center;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+figure img {
+  display: block;
+  max-width: 100%;
+  max-height: 200mm;   /* 限制高度，保证图片与前一条标题能排在同一页 */
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  border: .5pt solid #d0d0d0;
+}
+
+figcaption {
+  font-size: 9pt;
+  color: #333;
+  text-indent: 0;
+  margin-top: 4pt;
+}
+
+/* 代码 */
+code {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: .92em;
+}
+
+pre.code-box {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 8.5pt;
+  line-height: 1.45;
+  border: .75pt solid #555;
+  padding: 8pt 10pt;
+  background: #fbfbfb;
+  white-space: pre-wrap;      /* 打印时长行自动折行，不会被裁掉 */
+  overflow-wrap: break-word;
+  overflow-x: auto;
+  tab-size: 4;
+  text-indent: 0;
+  margin: 8pt 0;
+}
+
+pre.code-box code {
+  font: inherit;
+  white-space: inherit;
+}
+
+/* 列表 */
+ol.analysis {
+  margin: 6pt 0 0;
+  padding-left: 2.2em;
+}
+
+ol.analysis li {
+  margin: 4pt 0;
+  text-align: justify;
+  page-break-inside: avoid;   /* 单个条目不跨页，避免只留半行在下一页 */
+  break-inside: avoid;
+}
+
+/* 与后一段内容保持在同一页（如"如下所示："与其后的代码/图） */
+.keep-next {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+/* 只在屏幕 / 只在打印时显示 */
+.print-only {
+  display: none;
+}
+
+/* 表格（备用） */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10pt 0;
+  page-break-inside: avoid;
+}
+
+table th,
+table td {
+  border: 1px solid #000;
+  padding: 5pt 7pt;
+  font-size: 9pt;
+}
+
+table th {
+  background: #f8f8f8;
+}
+
+/* PDF 内嵌预览 */
+iframe.pdf-frame {
+  display: block;
+  width: 100%;
+  height: 620px;
+  margin: 8pt 0;
+  border: .75pt solid #888;
+  background: #fff;
+}
+
+p.pdf-note {
+  font-size: 9pt;
+  color: #333;
+  text-indent: 0;
+  margin-top: 2pt;
+}
+
+a {
+  color: #0645ad;
+}
+
+/* ================= 打印 ================= */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .page {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  /* PDF 无法可靠打印，打印时隐藏内嵌框，保留下载链接 */
+  iframe.pdf-frame {
+    display: none;
+  }
+
+  pre.code-box {
+    background: #fff;
+    page-break-inside: auto;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+}
+
+/* 屏幕上封面与正文之间留出间隔（打印时由 page-break-after 分页） */
+@media screen {
+  .cover {
+    padding-bottom: 30mm;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .page {
+    width: 100%;
+    padding: 16pt;
+  }
+
+  .cover-info {
+    width: 100%;
+    max-width: 92mm;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ============ 封面 ============ -->
+  <section class="cover">
+    <p class="cover-school">河海大学 数学院</p>
+    <p class="cover-course">《数值代数》课程</p>
+
+    <h1 class="report-title">三角分解实验报告书</h1>
+
+    <div class="cover-info">
+      <div class="label">专　业：</div>
+      <div class="value">信息与计算科学</div>
+      <div class="label">姓　名：</div>
+      <div class="value">邸常伟</div>
+      <div class="label">学　号：</div>
+      <div class="value">2426010214</div>
+    </div>
+
+    <p class="cover-date">二〇二六年 十一月</p>
+  </section>
+
+  <!-- ============ 一、实验内容 ============ -->
+  <h2>一、实验内容</h2>
+
+  <p>实验题目如下：</p>
+
+  <figure>
+    <img src="work.png" alt="三角分解实验题目截图">
+  </figure>
+
+  <!-- ============ 二、实验代码 ============ -->
+  <h2>二、实验代码</h2>
+
+  <p class="keep-next">基本操作实现函数代码如下（MATLAB）：</p>
+
+<pre class="code-box"><code>clear; clc;
+n = 84;
+A = 6*eye(n) + 8*diag(ones(n-1,1),-1) + diag(ones(n-1,1),1);
+b = [7; 15*ones(n-2,1); 14];
+
+x_ref = A\b;
+
+[A_new, p] = PLU(A);
+U1 = triu(A_new);
+L1 = A_new - U1 + eye(n);
+
+fprintf('PLU: relerr = %.2e\n', norm(A(p,:) - L1*U1)/norm(A));
+
+y  = forward_sub(L1, b(p));
+x1 = back_sub(U1, y);
+fprintf('PLU: ||Ax-b||/||b|| = %.2e   ||x-x_ref||/||x_ref|| = %.2e\n', ...
+        norm(A*x1-b)/norm(b), norm(x1-x_ref)/norm(x_ref));
+
+A_new = LU(A);
+U2 = triu(A_new);
+L2 = A_new - U2 + eye(n);
+
+fprintf('LU : relerr = %.2e\n', norm(A - L2*U2)/norm(A));
+
+y  = forward_sub(L2, b);
+x2 = back_sub(U2, y);
+fprintf('LU : ||Ax-b||/||b|| = %.2e   ||x-x_ref||/||x_ref|| = %.2e\n', ...
+        norm(A*x2-b)/norm(b), norm(x2-x_ref)/norm(x_ref));
+
+fprintf('||x1-x2||/||x_ref|| = %.2e   cond(A) = %.2e\n', ...
+        norm(x1-x2)/norm(x_ref), cond(A));
+
+figure;
+subplot(2,3,1), spy(A),  title('A');
+subplot(2,3,2), spy(L1), title('L1 (PLU)');
+subplot(2,3,3), spy(U1), title('U1 (PLU)');
+subplot(2,3,4), spy(A),  title('A');
+subplot(2,3,5), spy(L2), title('L2 (LU)');
+subplot(2,3,6), spy(U2), title('U2 (LU)');
+
+function [A, p] = PLU(A)
+    n = size(A,1);
+    p = 1:n;
+    for k = 1:n-1
+        [a_max, l] = max(abs(A(k:n,k)));
+        if a_max == 0
+            fprintf('Error: 第 %d 步的列主元为0!\n', k);
+            return;
+        end
+        l = l + k - 1;
+        if l ~= k
+            t = A(k,:);  A(k,:) = A(l,:);  A(l,:) = t;
+            tmp = p(k);  p(k) = p(l);      p(l) = tmp;
+        end
+        A(k+1:n,k)     = A(k+1:n,k) / A(k,k);
+        A(k+1:n,k+1:n) = A(k+1:n,k+1:n) - A(k+1:n,k)*A(k,k+1:n);
+    end
+end
+
+function A = LU(A)
+    n = size(A,1);
+    for k = 1:n-1
+        A(k+1:n,k)     = A(k+1:n,k) / A(k,k);
+        A(k+1:n,k+1:n) = A(k+1:n,k+1:n) - A(k+1:n,k)*A(k,k+1:n);
+    end
+end
+
+function y = forward_sub(L, b)
+    n = numel(b); y = zeros(n,1);
+    for i = 1:n
+        y(i) = (b(i) - L(i,1:i-1)*y(1:i-1)) / L(i,i);
+    end
+end
+
+function x = back_sub(U, b)
+    n = numel(b); x = zeros(n,1);
+    for i = n:-1:1
+        x(i) = (b(i) - U(i,i+1:n)*x(i+1:n)) / U(i,i);
+    end
+end</code></pre>
+
+  <!-- ============ 三、实验结果 ============ -->
+  <h2>三、实验结果</h2>
+
+  <h3>LU 分解与列主元 LU 分解</h3>
+
+  <p class="no-indent">程序运行输出的结果如下：</p>
+<table>
+  <thead>
+    <tr>
+      <th>算法</th>
+      <th>数据</th>
+      <th>数值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PLU</td>
+      <td>relerr</td>
+      <td>2.65e-32</td>
+    </tr>
+    <tr>
+      <td>PLU</td>
+      <td>||Ax-b||/||b||</td>
+      <td>3.52e-09</td>
+    </tr>
+    <tr>
+      <td>PLU</td>
+      <td>||x-x_ref||/||x_ref|| </td>
+      <td>3.17e+08</td>
+    </tr>
+    <tr>
+      <td>LU</td>
+      <td>relerr</td>
+      <td>0.00e+00</td>
+    </tr>
+    <tr>
+      <td>LU</td>
+      <td>||Ax-b||/||b|| </td>
+      <td>4.90e-10 </td>
+    </tr>
+    <tr>
+      <td>LU</td>
+      <td>||x-x_ref||/||x_ref|| </td>
+      <td>7.92e+07</td>
+    </tr>
+    <tr>
+      <td>PLU VS LU</td>
+      <td>||x1-x2||/||x_ref|| </td>
+      <td>3.96e+08</td>
+    </tr>
+    <tr>
+      <td>PLU VS LU</td>
+      <td>cond(A)</td>
+      <td>1.18e+17</td>
+    </tr>
+    <!-- <tr>
+      <td>Status StrDelete(Sstring S, int pos, int len)</td>
+      <td>O ( n )</td>
+      <td>把 pos+len 之后字符向前覆盖</td>
+    </tr>
+    <tr>
+      <td>void GetNext(const Sstring T, int next[])</td>
+      <td>O ( m )</td>
+      <td>next 数组构建</td>
+    </tr>
+    <tr>
+      <td>int Index(const Sstring S, const Sstring T, int pos)</td>
+      <td>O ( n+m )</td>
+      <td>KMP 匹配</td>
+    </tr>
+    <tr>
+      <td>void Show(const char* name, Sstring S)</td>
+      <td>O ( n )</td>
+      <td>遍历输出串中所有字符</td>
+    </tr> -->
+  </tbody>
+</table>
+ <p>实验结果可视化：</p>
+
+  <figure>
+    <img src="Figure.png" alt="三角分解实验结果导出图">
+  </figure>
+  
+</div>
+</body>
+</html>
